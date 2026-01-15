@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auditoría Integral del Sistema de Aire Comprimido</title>
+    <style>
+        :root {
+            --primary-color: #1a3a5f;
+            --secondary-color: #2c5aa0;
+            --accent-color: #3a7ca5;
+            --light-color: #f0f5fa;
+            --dark-color: #333;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --danger-color: #f44336;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            color: var(--dark-color);
+            line-height: 1.6;
+            background-color: #fff;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 8px;
+            margin: 30px 0 15px;
+        }
+        
+        h3 {
+            color: var(--secondary-color);
+            margin: 20px 0 10px;
+        }
+        
+        h4 {
+            color: var(--accent-color);
+            margin: 15px 0 8px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            font-weight: normal;
+        }
+        
+        .logo-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .logo {
+            height: 80px;
+        }
+        
+        .audit-info {
+            background-color: var(--light-color);
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .info-item {
+            margin-bottom: 10px;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .norma-badge {
+            display: inline-block;
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 0.9rem;
+            margin: 0 5px 5px 0;
+        }
+        
+        section {
+            margin-bottom: 30px;
+        }
+        
+        .section-content {
+            padding: 0 10px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: left;
+            padding: 12px;
+        }
+        
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .hallazgo {
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid var(--warning-color);
+            background-color: #fff8e1;
+        }
+        
+        .critico {
+            border-left-color: var(--danger-color);
+            background-color: #ffebee;
+        }
+        
+        .leve {
+            border-left-color: var(--success-color);
+            background-color: #e8f5e9;
+        }
+        
+        .severidad {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .critico-severidad {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        .alto-severidad {
+            background-color: #ff9800;
+            color: white;
+        }
+        
+        .medio-severidad {
+            background-color: #ffc107;
+            color: black;
+        }
+        
+        .bajo-severidad {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .plan-remediacion {
+            background-color: #e8f4fd;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        
+        .remediacion-item {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #b3d9ff;
+        }
+        
+        .costos-ahorros {
+            background-color: #f1f8e9;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        
+        .financial-table {
+            width: 100%;
+            margin: 20px 0;
+        }
+        
+        .financial-table th {
+            background-color: var(--accent-color);
+        }
+        
+        .financial-table td {
+            text-align: right;
+        }
+        
+        .financial-table td:first-child {
+            text-align: left;
+        }
+        
+        .total-row {
+            font-weight: bold;
+            background-color: #e0f2f1;
+        }
+        
+        .herramientas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .herramienta-card {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+            border-top: 1px solid #ddd;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .page-break {
+            page-break-before: always;
+        }
+        
+        @media print {
+            body {
+                box-shadow: none;
+                padding: 10px;
+            }
+            
+            .page-break {
+                margin-top: 40px;
+                padding-top: 40px;
+                border-top: 1px solid #ccc;
+            }
+            
+            .no-print {
+                display: none;
+            }
+        }
+        
+        .button-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .print-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .print-button:hover {
+            background-color: var(--secondary-color);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <div>
+                <h1>AUDITORÍA INTEGRAL</h1>
+                <h2 class="subtitle">SISTEMA DE AIRE COMPRIMIDO</h2>
+            </div>
+            <div>
+                <div class="info-item">
+                    <span class="info-label">Código de Auditoría:</span> AIC-2024-078
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Fecha:</span> 15 de Octubre, 2024
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <main>
+        <section>
+            <h2>Resumen Ejecutivo</h2>
+            <div class="section-content">
+                <p>Esta auditoría integral del sistema de aire comprimido ha evaluado el estado actual de la instalación, identificando oportunidades de mejora en eficiencia energética, calidad del aire, gestión de activos y desempeño ambiental. El sistema auditado consta de 4 compresores de tornillo (3 de 100 HP y 1 de 75 HP), red de distribución de 850 metros lineales y 67 puntos de uso.</p>
+                
+                <p><strong>Hallazgos principales:</strong></p>
+                <ul>
+                    <li>Pérdidas por fugas estimadas en 28% del aire comprimido generado</li>
+                    <li>Consumo energético 18% superior al óptimo para la producción actual</li>
+                    <li>Falta de monitorización continua de calidad del aire (ISO 8573)</li>
+                    <li>Ausencia de estrategia formal de gestión de activos (ISO 55000)</li>
+                    <li>Falta de procedimientos estandarizados para recopilación de datos (ISO 14224)</li>
+                </ul>
+                
+                <p><strong>Potencial de ahorro:</strong> La implementación del plan de remediación propuesto puede generar ahorros anuales de <strong>$185,400 USD</strong> con una inversión recuperada en 1.8 años.</p>
+            </div>
+        </section>
+        
+        <section>
+            <h2>Alcance y Metodología</h2>
+            <div class="section-content">
+                <h3>Alcance de la Auditoría</h3>
+                <p>La auditoría cubre todos los componentes del sistema de aire comprimido:</p>
+                <ul>
+                    <li>Compresores (tornillo y centrífugo)</li>
+                    <li>Sistemas de tratamiento (secadores, filtros)</li>
+                    <li>Red de distribución (tuberías, válvulas, reguladores)</li>
+                    <li>Puntos de uso y aplicaciones</li>
+                    <li>Sistemas de control y monitorización</li>
+                    <li>Gestión energética y ambiental</li>
+                </ul>
+                
+                <h3>Normas Aplicadas</h3>
+                <div>
+                    <span class="norma-badge">ISO 11011:2013</span>
+                    <span class="norma-badge">ISO 8573-1:2010</span>
+                    <span class="norma-badge">ISO 55000:2014</span>
+                    <span class="norma-badge">ISO 14224:2016</span>
+                    <span class="norma-badge">ISO 13374-1:2003</span>
+                    <span class="norma-badge">ISO 14001:2015</span>
+                </div>
+                
+                <h3>Metodología</h3>
+                <p>La auditoría se realizó mediante:</p>
+                <ol>
+                    <li>Evaluación documental del sistema</li>
+                    <li>Mediciones in situ durante 2 semanas de operación</li>
+                    <li>Análisis de datos históricos de consumo y mantenimiento</li>
+                    <li>Evaluación de la calidad del aire en puntos críticos</li>
+                    <li>Análisis de costos del ciclo de vida</li>
+                    <li>Benchmarking con mejores prácticas de la industria</li>
+                </ol>
+            </div>
+        </section>
+        
+        <section>
+            <h2>Herramientas Técnicas Utilizadas</h2>
+            <div class="section-content">
+                <div class="herramientas-grid">
+                    <div class="herramienta-card">
+                        <h4>Ultrasonido para Detección de Fugas</h4>
+                        <p>Equipo UE Systems Ultraprobe 9000 para identificación y cuantificación de fugas en todo el sistema.</p>
+                    </div>
+                    
+                    <div class="herramienta-card">
+                        <h4>Analizador de Redes de Aire</h4>
+                        <p>Dispositivo Atlas Copco EAA 351 para medición de flujo, presión, temperatura, punto de rocío y consumo energético.</p>
+                    </div>
+                    
+                    <div class="herramienta-card">
+                        <h4>Termografía Infrarroja</h4>
+                        <p>Cámara FLIR T1020 para detección de sobrecalentamientos en compresores y motores.</p>
+                    </div>
+                    
+                    <div class="herramienta-card">
+                        <h4>Monitor de Calidad de Aire</h4>
+                        <p>Equipo Deltech DFM para medición de partículas, agua y aceite según clases ISO 8573.</p>
+                    </div>
+                    
+                    <div class="herramienta-card">
+                        <h4>Software de Análisis de Datos</h4>
+                        <p>Plataforma AIRMaster+ del Departamento de Energía de EE.UU. para modelado y optimización del sistema.</p>
+                    </div>
+                    
+                    <div class="herramienta-card">
+                        <h4>Sistema de Adquisición de Datos</h4>
+                        <p>DAQ NI cDAQ-9188 con módulos específicos para variables del sistema de aire comprimido.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="page-break">
+            <h2>Hallazgos de la Auditoría</h2>
+            <div class="section-content">
+                
+                <h3>ISO 11011 - Eficiencia Energética</h3>
+                <div class="hallazgo critico">
+                    <h4>Fugas en el sistema de distribución <span class="severidad critico-severidad">CRÍTICO</span></h4>
+                    <p><strong>Hallazgo:</strong> Se identificaron 47 fugas significativas en el sistema, representando un 28% de pérdida del aire comprimido generado.</p>
+                    <p><strong>Ubicación:</strong> Principalmente en acoples rápidos (32%), válvulas (24%) y juntas (18%).</p>
+                    <p><strong>Impacto energético:</strong> 142,000 kWh/año equivalente a $18,460 USD anuales.</p>
+                </div>
+                
+                <div class="hallazgo">
+                    <h4>Operación ineficiente de compresores <span class="severidad alto-severidad">ALTO</span></h4>
+                    <p><strong>Hallazgo:</strong> Los compresores operan a presiones más altas (7.5 bar) de las necesarias (6.5 bar). Cada bar adicional incrementa el consumo en aproximadamente 7%.</p>
+                    <p><strong>Impacto energético:</strong> 85,000 kWh/año equivalente a $11,050 USD anuales.</p>
+                </div>
+                
+                <h3>ISO 8573 - Calidad del Aire</h3>
+                <div class="hallazgo">
+                    <h4>Calidad de aire inferior a especificaciones <span class="severidad medio-severidad">MEDIO</span></h4>
+                    <p><strong>Hallazgo:</strong> En 8 de 12 puntos críticos analizados, el aire no cumple con la clase especificada (Clase 2:3:2). Se detectó contenido de aceite de 0.8 mg/m³ (límite: 0.1 mg/m³).</p>
+                    <p><strong>Causa:</strong> Filtros saturados y mantenimiento incorrecto de secadores.</p>
+                </div>
+                
+                <h3>ISO 55000 - Gestión de Activos</h3>
+                <div class="hallazgo">
+                    <h4>Falta de estrategia de gestión de activos <span class="severidad alto-severidad">ALTO</span></h4>
+                    <p><strong>Hallazgo:</strong> No existe un plan formal de ciclo de vida para los activos del sistema de aire comprimido. Mantenimiento reactivo en 65% de las intervenciones.</p>
+                    <p><strong>Impacto:</strong> Costos de mantenimiento 35% superiores a referencia de industria.</p>
+                </div>
+                
+                <h3>ISO 14224 - Recopilación de Datos</h3>
+                <div class="hallazgo leve">
+                    <h4>Datos incompletos y no estandarizados <span class="severidad bajo-severidad">BAJO</span></h4>
+                    <p><strong>Hallazgo:</strong> Falta de procedimientos estandarizados para recopilación de datos de fallas, mantenimiento y desempeño.</p>
+                    <p><strong>Impacto:</strong> Imposibilidad de realizar análisis confiables de tendencias y confiabilidad.</p>
+                </div>
+                
+                <h3>ISO 13374 - Monitoreo de la Condición</h3>
+                <div class="hallazgo">
+                    <h4>Ausencia de monitorización continua <span class="severidad medio-severidad">MEDIO</span></h4>
+                    <p><strong>Hallazgo:</strong> El sistema no cuenta con monitorización en tiempo real de parámetros críticos. Las mediciones son manuales y esporádicas.</p>
+                    <p><strong>Impacto:</strong> Detección tardía de problemas y falta de datos para mantenimiento predictivo.</p>
+                </div>
+                
+                <h3>ISO 14001 - Gestión Ambiental</h3>
+                <div class="hallazgo leve">
+                    <h4>Gestión inadecuada de residuos <span class="severidad bajo-severidad">BAJO</span></h4>
+                    <p><strong>Hallazgo:</strong> No existe procedimiento formal para disposición de aceites, filtros y condensados del sistema.</p>
+                    <p><strong>Riesgo:</strong> Posible contaminación y multas regulatorias.</p>
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Área Evaluada</th>
+                            <th>Estado Actual</th>
+                            <th>Puntuación (1-10)</th>
+                            <th>Benchmark Industria</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Eficiencia Energética</td>
+                            <td>Deficiente</td>
+                            <td>4.2</td>
+                            <td>7.8</td>
+                        </tr>
+                        <tr>
+                            <td>Calidad del Aire</td>
+                            <td>Regular</td>
+                            <td>5.8</td>
+                            <td>8.2</td>
+                        </tr>
+                        <tr>
+                            <td>Gestión de Activos</td>
+                            <td>Deficiente</td>
+                            <td>3.5</td>
+                            <td>7.5</td>
+                        </tr>
+                        <tr>
+                            <td>Monitorización</td>
+                            <td>Deficiente</td>
+                            <td>3.0</td>
+                            <td>8.0</td>
+                        </tr>
+                        <tr>
+                            <td>Gestión Ambiental</td>
+                            <td>Regular</td>
+                            <td>6.2</td>
+                            <td>8.5</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td><strong>PROMEDIO GENERAL</strong></td>
+                            <td><strong>Deficiente</strong></td>
+                            <td><strong>4.5</strong></td>
+                            <td><strong>8.0</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        
+        <section class="page-break">
+            <h2>Plan de Remedición</h2>
+            <div class="section-content">
+                <div class="plan-remediacion">
+                    <h3>Acciones Correctivas y Preventivas</h3>
+                    
+                    <div class="remediacion-item">
+                        <h4>Fase 1: Corrección Inmediata (0-3 meses)</h4>
+                        <ul>
+                            <li><strong>Reparación de fugas críticas:</strong> Reparar las 15 fugas mayores identificadas</li>
+                            <li><strong>Optimización de presión:</strong> Ajustar presión de operación a 6.5 bar</li>
+                            <li><strong>Reemplazo de filtros:</strong> Cambiar filtros de aire saturados</li>
+                            <li><strong>Capacitación básica:</strong> Entrenamiento en detección de fugas para personal de mantenimiento</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="remediacion-item">
+                        <h4>Fase 2: Mejoras a Mediano Plazo (3-12 meses)</h4>
+                        <ul>
+                            <li><strong>Implementación de sistema de monitorización:</strong> Instalación de sensores en línea para presión, flujo, temperatura y punto de rocío</li>
+                            <li><strong>Actualización de secadores:</strong> Reemplazo de 2 secadores refrigerantes obsoletos</li>
+                            <li><strong>Programa de gestión de fugas:</strong> Establecer programa trimestral de detección y reparación</li>
+                            <li><strong>Desarrollo de procedimientos:</strong> Crear SOPs para operación y mantenimiento según normas ISO</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="remediacion-item">
+                        <h4>Fase 3: Optimización a Largo Plazo (12-24 meses)</h4>
+                        <ul>
+                            <li><strong>Modernización de compresores:</strong> Reemplazo de compresor de 75 HP por unidad de velocidad variable</li>
+                            <li><strong>Sistema de gestión centralizada:</strong> Implementación de sistema SCADA para control integrado</li>
+                            <li><strong>Rediseño parcial de red:</strong> Optimización de distribución en áreas de alta demanda</li>
+                            <li><strong>Certificación ISO 50001:</strong> Implementación de sistema de gestión energética</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="costos-ahorros">
+                    <h3>Análisis Económico y Propuesta de Inversión</h3>
+                    
+                    <table class="financial-table">
+                        <thead>
+                            <tr>
+                                <th>Concepto</th>
+                                <th>Inversión (USD)</th>
+                                <th>Ahorro Anual (USD)</th>
+                                <th>Payback (años)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Reparación de fugas</td>
+                                <td>$8,500</td>
+                                <td>$18,460</td>
+                                <td>0.5</td>
+                            </tr>
+                            <tr>
+                                <td>Optimización de presión</td>
+                                <td>$2,000</td>
+                                <td>$11,050</td>
+                                <td>0.2</td>
+                            </tr>
+                            <tr>
+                                <td>Sistema de monitorización</td>
+                                <td>$42,000</td>
+                                <td>$25,300</td>
+                                <td>1.7</td>
+                            </tr>
+                            <tr>
+                                <td>Actualización de secadores</td>
+                                <td>$28,500</td>
+                                <td>$15,200</td>
+                                <td>1.9</td>
+                            </tr>
+                            <tr>
+                                <td>Compresor de velocidad variable</td>
+                                <td>$65,000</td>
+                                <td>$38,200</td>
+                                <td>1.7</td>
+                            </tr>
+                            <tr>
+                                <td>Capacitación y procedimientos</td>
+                                <td>$12,000</td>
+                                <td>$8,500</td>
+                                <td>1.4</td>
+                            </tr>
+                            <tr>
+                                <td>Rediseño parcial de red</td>
+                                <td>$35,000</td>
+                                <td>$22,400</td>
+                                <td>1.6</td>
+                            </tr>
+                            <tr>
+                                <td>Reducción costos mantenimiento</td>
+                                <td>$15,000</td>
+                                <td>$46,290</td>
+                                <td>0.3</td>
+                            </tr>
+                            <tr class="total-row">
+                                <td><strong>TOTAL</strong></td>
+                                <td><strong>$208,000</strong></td>
+                                <td><strong>$185,400</strong></td>
+                                <td><strong>1.8</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <h4>Beneficios Adicionales</h4>
+                    <ul>
+                        <li><strong>Reducción de emisiones de CO₂:</strong> 142 toneladas anuales equivalentes</li>
+                        <li><strong>Mejora en confiabilidad:</strong> Reducción del 65% en paradas no programadas</li>
+                        <li><strong>Mejora en calidad de producto:</strong> Reducción de defectos por contaminación de aire</li>
+                        <li><strong>Cumplimiento normativo:</strong> Alineación con estándares ISO aplicables</li>
+                    </ul>
+                    
+                    <h4>Rentabilidad de la Inversión</h4>
+                    <p>Considerando una vida útil de 10 años para las mejoras, el Valor Presente Neto (VPN) de la inversión es de <strong>$1,240,000 USD</strong> con una Tasa Interna de Retorno (TIR) del <strong>62%</strong>.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section>
+            <h2>Conclusiones y Recomendaciones</h2>
+            <div class="section-content">
+                <h3>Conclusiones Principales</h3>
+                <ol>
+                    <li>El sistema de aire comprimido opera con una eficiencia energética del 68%, significativamente por debajo del potencial del 85% alcanzable.</li>
+                    <li>Existen oportunidades inmediatas de ahorro energético por $29,510 USD anuales con inversiones mínimas.</li>
+                    <li>La calidad del aire no cumple con los requerimientos de procesos críticos, afectando potencialmente la calidad del producto.</li>
+                    <li>La falta de un sistema de gestión de activos formal incrementa los costos de operación y mantenimiento en aproximadamente 35%.</li>
+                    <li>La implementación completa del plan de remediación generará ahorros anuales de $185,400 USD con un periodo de retorno de inversión de 1.8 años.</li>
+                </ol>
+                
+                <h3>Recomendaciones Estratégicas</h3>
+                <ol>
+                    <li><strong>Priorizar la reparación de fugas</strong> como acción inmediata de bajo costo y alto retorno.</li>
+                    <li><strong>Implementar un sistema de monitorización continua</strong> que permita el mantenimiento predictivo y la optimización en tiempo real.</li>
+                    <li><strong>Desarrollar un plan de gestión de activos</strong> alineado con ISO 55000 para todo el sistema de aire comprimido.</li>
+                    <li><strong>Establecer procedimientos estandarizados</strong> para operación, mantenimiento y recopilación de datos según normas ISO aplicables.</li>
+                    <li><strong>Considerar la modernización tecnológica</strong> de componentes obsoletos, comenzando por el compresor de velocidad variable.</li>
+                    <li><strong>Integrar el sistema de aire comprimido</strong> en el sistema de gestión ambiental según ISO 14001.</li>
+                </ol>
+                
+                <h3>Próximos Pasos</h3>
+                <ol>
+                    <li>Presentar este informe a la gerencia para aprobación del presupuesto.</li>
+                    <li>Formar equipo de proyecto multidisciplinario para implementación.</li>
+                    <li>Desarrollar cronograma detallado de implementación faseada.</li>
+                    <li>Establecer indicadores clave de desempeño (KPIs) para monitoreo de resultados.</li>
+                    <li>Programar auditoría de seguimiento en 12 meses para verificar implementación y resultados.</li>
+                </ol>
+            </div>
+        </section>
+        
+        <div class="button-container no-print">
+            <button class="print-button" onclick="window.print()">Imprimir o Guardar como PDF</button>
+        </div>
+    </main>
+    
+    <footer>
+        <p><strong>Auditoría Integral de Sistema de Aire Comprimido</strong></p>
+        <p>Documento confidencial - Uso exclusivo para la organización auditada</p>
+        <p>© 2024 Consultoría en Sistemas de Aire Comprimido S.A. - Todos los derechos reservados</p>
+        <p>Elaborado por: Ing. Roberto Méndez, Auditor Jefe - Certificaciones: CEM, CMVP, ISO 50001 Lead Auditor</p>
+    </footer>
+</body>
+</html>

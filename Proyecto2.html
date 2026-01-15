@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyecto de Implementación RCM - Análisis Económico para Planta de Producción</title>
+    <style>
+        /* Estilos para impresión PDF */
+        @media print {
+            @page {
+                margin: 1.5cm;
+                size: letter;
+            }
+            
+            body {
+                font-size: 11pt;
+                line-height: 1.4;
+            }
+            
+            .page-break {
+                page-break-before: always;
+            }
+            
+            .no-print {
+                display: none;
+            }
+            
+            .print-only {
+                display: block;
+            }
+            
+            h1, h2, h3 {
+                page-break-after: avoid;
+            }
+            
+            table {
+                page-break-inside: avoid;
+            }
+            
+            .content-block {
+                page-break-inside: avoid;
+            }
+        }
+        
+        /* Estilos generales */
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            font-size: 12pt;
+            line-height: 1.5;
+            counter-reset: section subsection subsubsection;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            text-align: center;
+            counter-reset: subsection subsubsection;
+        }
+        
+        h2 {
+            color: #2980b9;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 8px;
+            margin-top: 30px;
+            counter-reset: subsubsection;
+        }
+        
+        h3 {
+            color: #16a085;
+            margin-top: 25px;
+        }
+        
+        h4 {
+            color: #27ae60;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 2px solid #7f8c8d;
+            padding-bottom: 20px;
+        }
+        
+        .header h1 {
+            border-bottom: none;
+            margin-bottom: 5px;
+        }
+        
+        .header .subtitle {
+            font-style: italic;
+            color: #7f8c8d;
+        }
+        
+        .norma-badge {
+            display: inline-block;
+            background-color: #e74c3c;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 3px;
+            font-size: 0.8em;
+            margin: 0 5px 5px 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 0.95em;
+        }
+        
+        th {
+            background-color: #3498db;
+            color: white;
+            padding: 10px;
+            text-align: left;
+        }
+        
+        td {
+            padding: 8px 10px;
+            border: 1px solid #ddd;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .important-box {
+            border-left: 4px solid #e74c3c;
+            padding: 15px;
+            margin: 20px 0;
+            background-color: #fdf2f2;
+        }
+        
+        .info-box {
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+            background-color: #f2f9ff;
+        }
+        
+        .economic-box {
+            border-left: 4px solid #27ae60;
+            padding: 15px;
+            margin: 20px 0;
+            background-color: #f0f9f0;
+        }
+        
+        .step-box {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+        }
+        
+        .step-number {
+            display: inline-block;
+            background-color: #2c3e50;
+            color: white;
+            width: 30px;
+            height: 30px;
+            text-align: center;
+            line-height: 30px;
+            border-radius: 50%;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            font-size: 0.9em;
+            color: #7f8c8d;
+        }
+        
+        .print-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .print-btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .risk-matrix {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            margin: 20px 0;
+            border: 1px solid #ddd;
+        }
+        
+        .risk-cell {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+            font-size: 0.9em;
+        }
+        
+        .risk-critical { background-color: #e74c3c; color: white; font-weight: bold; }
+        .risk-high { background-color: #e67e22; color: white; }
+        .risk-medium { background-color: #f1c40f; }
+        .risk-low { background-color: #2ecc71; color: white; }
+        .risk-negligible { background-color: #27ae60; color: white; }
+        
+        .content-block {
+            margin-bottom: 25px;
+        }
+        
+        .logo-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .logo {
+            max-width: 200px;
+            height: auto;
+        }
+        
+        .phase-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .phase-card {
+            flex: 1;
+            min-width: 300px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        
+        .phase-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .criteria-list {
+            padding-left: 20px;
+        }
+        
+        .criteria-list li {
+            margin-bottom: 8px;
+        }
+        
+        .reference-list {
+            font-size: 0.9em;
+            color: #555;
+        }
+        
+        .financial-metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            margin: 10px 0;
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            border-radius: 4px;
+        }
+        
+        .metric-value {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #27ae60;
+        }
+        
+        .metric-negative {
+            color: #e74c3c;
+        }
+        
+        .roi-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .roi-card {
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .roi-card.green {
+            background-color: #d5f4e6;
+            border-top: 4px solid #27ae60;
+        }
+        
+        .roi-card.blue {
+            background-color: #d6eaf8;
+            border-top: 4px solid #3498db;
+        }
+        
+        .roi-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .roi-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            text-align: center;
+            margin: 15px 0;
+        }
+        
+        .cost-breakdown {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .cost-item {
+            flex: 1;
+            min-width: 200px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #9b59b6;
+        }
+        
+        .cost-amount {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #2c3e50;
+            margin-top: 5px;
+        }
+        
+        .savings-item {
+            flex: 1;
+            min-width: 200px;
+            padding: 15px;
+            background-color: #f0f9f0;
+            border-radius: 5px;
+            border-left: 4px solid #27ae60;
+        }
+        
+        .savings-amount {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #27ae60;
+            margin-top: 5px;
+        }
+        
+        .chart-container {
+            height: 300px;
+            margin: 20px 0;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .chart-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #7f8c8d;
+        }
+        
+        .chart-bar {
+            height: 20px;
+            background-color: #3498db;
+            margin: 5px 0;
+            border-radius: 3px;
+            color: white;
+            padding-left: 10px;
+            display: flex;
+            align-items: center;
+            font-size: 0.9em;
+        }
+        
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .kpi-card {
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            border-top: 4px solid #3498db;
+        }
+        
+        .kpi-card.financial {
+            border-top-color: #27ae60;
+        }
+        
+        .kpi-card.operational {
+            border-top-color: #3498db;
+        }
+        
+        .kpi-card.maintenance {
+            border-top-color: #9b59b6;
+        }
+        
+        .kpi-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+        
+        .kpi-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            text-align: center;
+            margin: 10px 0;
+        }
+        
+        .kpi-target {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <button class="print-btn no-print" onclick="window.print()">🖨️ Imprimir PDF</button>
+    
+    <div class="container">
+        <!-- Cabecera -->
+        <div class="header">
+            <div class="logo-container">
+                <div class="logo" style="font-size: 2em; font-weight: bold; color: #2c3e50;">RCM</div>
+                <div style="font-size: 0.9em; color: #7f8c8d;">Mantenimiento Centrado en la Confiabilidad</div>
+            </div>
+            <h1>PROYECTO DE IMPLEMENTACIÓN RCM</h1>
+            <div class="subtitle">Análisis Económico y de Ahorros para Planta de Producción</div>
+            <div>
+                <span class="norma-badge">SAE JA1011</span>
+                <span class="norma-badge">SAE JA1012</span>
+                <span class="norma-badge">ISO 14224</span>
+                <span class="norma-badge">AMEF</span>
+                <span class="norma-badge">UNE-EN 60300-3-11</span>
+                <span class="norma-badge">ANÁLISIS ECONÓMICO</span>
+            </div>
+        </div>
+        
+        <!-- Introducción -->
+        <div class="content-block">
+            <h2>1. INTRODUCCIÓN Y ALCANCE</h2>
+            <p>Este documento define el proyecto de implementación de Mantenimiento Centrado en la Confiabilidad (RCM) para una planta de producción, incluyendo análisis económico detallado, ahorros esperados y retorno de inversión. El RCM es un proceso sistemático utilizado para determinar las políticas de mantenimiento necesarias para maximizar la rentabilidad de los activos en su contexto operativo.</p>
+            
+            <div class="economic-box">
+                <strong>Objetivo económico del proyecto:</strong> Reducir el costo total de propiedad (TCO) de los activos en un 15-25% durante los primeros 3 años, mediante la optimización de estrategias de mantenimiento basadas en riesgo y datos.
+            </div>
+            
+            <h3>1.1. Alcance del Proyecto - Enfoque Planta de Producción</h3>
+            <ul>
+                <li>Análisis de sistemas críticos de producción identificados</li>
+                <li>Aplicación del proceso RCM completo según UNE-EN 60300-3-11</li>
+                <li>Evaluación de modos de falla mediante AMEF con análisis de impacto económico</li>
+                <li>Recolección y análisis de datos de confiabilidad según ISO 14224</li>
+                <li>Implementación de tareas de mantenimiento derivadas con análisis costo-beneficio</li>
+                <li>Establecimiento de métricas de seguimiento financieras y operativas</li>
+                <li>Cálculo detallado de ROI, período de recuperación y ahorros esperados</li>
+            </ul>
+        </div>
+        
+        <!-- Análisis Económico - Nueva Sección -->
+        <div class="page-break"></div>
+        <div class="content-block">
+            <h2>2. ANÁLISIS ECONÓMICO Y FINANCIERO</h2>
+            <p>Esta sección presenta el análisis económico completo del proyecto RCM para la planta de producción, incluyendo costos de implementación, ahorros esperados y métricas financieras.</p>
+            
+            <h3>2.1. Costos de Implementación del Proyecto RCM</h3>
+            
+            <div class="cost-breakdown">
+                <div class="cost-item">
+                    <div>Consultoría y Capacitación</div>
+                    <div class="cost-amount">$45,000 - $65,000</div>
+                    <div style="font-size: 0.9em; color: #7f8c8d;">Incluye formación del equipo, talleres y seguimiento inicial</div>
+                </div>
+                
+                <div class="cost-item">
+                    <div>Software y Herramientas</div>
+                    <div class="cost-amount">$20,000 - $30,000</div>
+                    <div style="font-size: 0.9em; color: #7f8c8d;">Sistemas CMMS/EAM, herramientas de análisis de datos</div>
+                </div>
+                
+                <div class="cost-item">
+                    <div>Recursos Humanos Internos</div>
+                    <div class="cost-amount">$75,000 - $100,000</div>
+                    <div style="font-size: 0.9em; color: #7f8c8d;">Dedicación del equipo RCM (7 meses, 5 personas)</div>
+                </div>
+                
+                <div class="cost-item">
+                    <div>Equipos de Monitoreo</div>
+                    <div class="cost-amount">$30,000 - $50,000</div>
+                    <div style="font-size: 0.9em; color: #7f8c8d;">Sensores, sistemas de análisis de condición</div>
+                </div>
+            </div>
+            
+            <div class="financial-metric">
+                <div>
+                    <strong>Costo Total Estimado de Implementación:</strong><br>
+                    <span style="font-size: 0.9em; color: #7f8c8d;">Inversión inicial requerida</span>
+                </div>
+                <div class="metric-value">$170,000 - $245,000</div>
+            </div>
+            
+            <h3>2.2. Ahorros Esperados Anuales</h3>
+            
+            <div class="savings-item">
+                <div>Reducción de Mantenimiento Correctivo</div>
+                <div class="savings-amount">$80,000 - $120,000</div>
+                <div style="font-size: 0.9em; color: #7f8c8d;">Reducción del 30-40% en reparaciones de emergencia</div>
+            </div>
+            
+            <div class="savings-item">
+                <div>Reducción de Tiempos de Parada</div>
+                <div class="savings-amount">$150,000 - $250,000</div>
+                <div style="font-size: 0.9em; color: #7f8c8d;">Aumento de disponibilidad del 3-5% (valor de producción)</div>
+            </div>
+            
+            <div class="savings-item">
+                <div>Optimización de Inventario de Repuestos</div>
+                <div class="savings-amount">$30,000 - $50,000</div>
+                <div style="font-size: 0.9em; color: #7f8c8d;">Reducción del 15-20% en inventario obsoleto y optimización de niveles</div>
+            </div>
+            
+            <div class="savings-item">
+                <div>Reducción de Consumo Energético</div>
+                <div class="savings-amount">$20,000 - $40,000</div>
+                <div style="font-size: 0.9em; color: #7f8c8d;">Mejora de eficiencia del 2-4% en equipos críticos</div>
+            </div>
+            
+            <div class="savings-item">
+                <div>Extensión de Vida Útil de Activos</div>
+                <div class="savings-amount">$50,000 - $80,000</div>
+                <div style="font-size: 0.9em; color: #7f8c8d;">Diferimiento de inversiones de capital (CAPEX)</div>
+            </div>
+            
+            <div class="financial-metric">
+                <div>
+                    <strong>Ahorro Total Anual Esperado:</strong><br>
+                    <span style="font-size: 0.9em; color: #7f8c8d;">Después del primer año de implementación completa</span>
+                </div>
+                <div class="metric-value">$330,000 - $540,000</div>
+            </div>
+            
+            <h3>2.3. Métricas Financieras Clave</h3>
+            
+            <div class="roi-container">
+                <div class="roi-card green">
+                    <div class="roi-title">Retorno de Inversión (ROI)</div>
+                    <div class="roi-value">135% - 220%</div>
+                    <div style="text-align: center; font-size: 0.9em;">
+                        Primer año después de implementación completa<br>
+                        <strong>ROI Anualizado:</strong> 45% - 73%
+                    </div>
+                </div>
+                
+                <div class="roi-card blue">
+                    <div class="roi-title">Período de Recuperación (Payback)</div>
+                    <div class="roi-value">5 - 9 meses</div>
+                    <div style="text-align: center; font-size: 0.9em;">
+                        Tiempo para recuperar la inversión inicial<br>
+                        Basado en ahorros promediados
+                    </div>
+                </div>
+            </div>
+            
+            <div class="financial-metric">
+                <div>
+                    <strong>Valor Presente Neto (VPN) a 5 años:</strong><br>
+                    <span style="font-size: 0.9em; color: #7f8c8d;">Tasa de descuento del 10%</span>
+                </div>
+                <div class="metric-value">$850,000 - $1,450,000</div>
+            </div>
+            
+            <div class="financial-metric">
+                <div>
+                    <strong>Tasa Interna de Retorno (TIR):</strong><br>
+                    <span style="font-size: 0.9em; color: #7f8c8d;">Período de 5 años</span>
+                </div>
+                <div class="metric-value">62% - 98%</div>
+            </div>
+            
+            <h3>2.4. Proyección de Ahorros por Año</h3>
+            
+            <div class="chart-container">
+                <div class="chart-placeholder">
+                    <div style="font-size: 1.2em; margin-bottom: 20px;">PROYECCIÓN DE AHORROS ACUMULADOS</div>
+                    <div style="width: 100%; max-width: 600px;">
+                        <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                            <div style="width: 120px;">Año 1:</div>
+                            <div class="chart-bar" style="width: 40%;">$340,000</div>
+                        </div>
+                        <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                            <div style="width: 120px;">Año 2:</div>
+                            <div class="chart-bar" style="width: 70%;">$595,000</div>
+                        </div>
+                        <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                            <div style="width: 120px;">Año 3:</div>
+                            <div class="chart-bar" style="width: 100%;">$850,000</div>
+                        </div>
+                        <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                            <div style="width: 120px;">Año 4:</div>
+                            <div class="chart-bar" style="width: 130%; background-color: #27ae60;">$1,105,000</div>
+                        </div>
+                        <div style="display: flex; align-items: center;">
+                            <div style="width: 120px;">Año 5:</div>
+                            <div class="chart-bar" style="width: 160%; background-color: #27ae60;">$1,360,000</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px; font-size: 0.9em; color: #7f8c8d;">* Ahorros netos después de costos de implementación</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Normas y Referencias -->
+        <div class="content-block">
+            <h2>3. NORMAS Y REFERENCIAS</h2>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Norma / Estándar</th>
+                        <th>Descripción</th>
+                        <th>Aplicación en el Proyecto</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>SAE JA1011</strong><br>"Criterios de Evaluación para Procesos RCM"</td>
+                        <td>Establece los criterios mínimos que cualquier proceso debe cumplir para ser considerado RCM</td>
+                        <td>Base para validar que nuestro proceso cumple con los requisitos RCM</td>
+                    </tr>
+                    <tr>
+                        <td><strong>SAE JA1012</strong><br>"Guía para la Aplicación de RCM"</td>
+                        <td>Proporciona orientación sobre cómo aplicar el proceso RCM</td>
+                        <td>Guía paso a paso para la implementación</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ISO 14224</strong><br>"Datos de confiabilidad y mantenimiento"</td>
+                        <td>Estándar para recolección e intercambio de datos de confiabilidad</td>
+                        <td>Estructura para recopilación y análisis de datos de fallas</td>
+                    </tr>
+                    <tr>
+                        <td><strong>UNE-EN 60300-3-11</strong><br>"Gestión de la confiabilidad - Parte 3-11: Guía de aplicación - Mantenimiento Centrado en la Confiabilidad"</td>
+                        <td>Proporciona directrices para la aplicación del proceso RCM</td>
+                        <td>Proceso completo RCM a seguir en el proyecto</td>
+                    </tr>
+                    <tr>
+                        <td><strong>AMEF</strong><br>"Análisis de Modos de Fallo y Efectos"</td>
+                        <td>Metodología sistemática para identificar fallos potenciales</td>
+                        <td>Herramienta para análisis de modos de falla dentro del RCM</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- KPIs Financieros y Operativos -->
+        <div class="page-break"></div>
+        <div class="content-block">
+            <h2>4. INDICADORES CLAVE DE DESEMPEÑO (KPIs)</h2>
+            <p>Establecimiento de métricas para medir el éxito económico y operativo del proyecto RCM en la planta de producción.</p>
+            
+            <h3>4.1. KPIs Financieros</h3>
+            
+            <div class="kpi-grid">
+                <div class="kpi-card financial">
+                    <div class="kpi-title">Costo de Mantenimiento / Costo de Producción</div>
+                    <div class="kpi-value">8.5%</div>
+                    <div class="kpi-target">Meta: < 7.0% (Reducción del 18%)</div>
+                </div>
+                
+                <div class="kpi-card financial">
+                    <div class="kpi-title">ROI del Programa RCM</div>
+                    <div class="kpi-value">45%</div>
+                    <div class="kpi-target">Meta: > 40% anual</div>
+                </div>
+                
+                <div class="kpi-card financial">
+                    <div class="kpi-title">Ahorro en Mantenimiento Correctivo</div>
+                    <div class="kpi-value">$95,000</div>
+                    <div class="kpi-target">Meta: $80,000 - $120,000 anual</div>
+                </div>
+                
+                <div class="kpi-card financial">
+                    <div class="kpi-title">Reducción Costo Total de Propiedad (TCO)</div>
+                    <div class="kpi-value">17%</div>
+                    <div class="kpi-target">Meta: 15-25% en 3 años</div>
+                </div>
+            </div>
+            
+            <h3>4.2. KPIs Operativos</h3>
+            
+            <div class="kpi-grid">
+                <div class="kpi-card operational">
+                    <div class="kpi-title">Disponibilidad Operacional (AO)</div>
+                    <div class="kpi-value">92.5%</div>
+                    <div class="kpi-target">Meta: > 94.0%</div>
+                </div>
+                
+                <div class="kpi-card operational">
+                    <div class="kpi-title">MTBF (Tiempo Medio Entre Fallas)</div>
+                    <div class="kpi-value">420 hrs</div>
+                    <div class="kpi-target">Meta: > 500 hrs (+19%)</div>
+                </div>
+                
+                <div class="kpi-card operational">
+                    <div class="kpi-title">MTTR (Tiempo Medio de Reparación)</div>
+                    <div class="kpi-value">8.2 hrs</div>
+                    <div class="kpi-target">Meta: < 6.5 hrs (-21%)</div>
+                </div>
+                
+                <div class="kpi-card operational">
+                    <div class="kpi-title">Tasa de Fallas Críticas</div>
+                    <div class="kpi-value">2.8%</div>
+                    <div class="kpi-target">Meta: < 2.0% (-29%)</div>
+                </div>
+            </div>
+            
+            <h3>4.3. KPIs de Mantenimiento</h3>
+            
+            <div class="kpi-grid">
+                <div class="kpi-card maintenance">
+                    <div class="kpi-title">Cumplimiento Programa Mantenimiento</div>
+                    <div class="kpi-value">88%</div>
+                    <div class="kpi-target">Meta: > 95%</div>
+                </div>
+                
+                <div class="kpi-card maintenance">
+                    <div class="kpi-title">Backlog de Mantenimiento</div>
+                    <div class="kpi-value">3.2 semanas</div>
+                    <div class="kpi-target">Meta: < 2.0 semanas</div>
+                </div>
+                
+                <div class="kpi-card maintenance">
+                    <div class="kpi-title">Eficiencia de Mano de Obra</div>
+                    <div class="kpi-value">72%</div>
+                    <div class="kpi-target">Meta: > 80%</div>
+                </div>
+                
+                <div class="kpi-card maintenance">
+                    <div class="kpi-title">Rotación de Inventario</div>
+                    <div class="kpi-value">1.8</div>
+                    <div class="kpi-target">Meta: > 2.5</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Equipo y Responsabilidades -->
+        <div class="content-block">
+            <h2>5. EQUIPO DE TRABAJO Y RESPONSABILIDADES</h2>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rol</th>
+                        <th>Responsabilidades</th>
+                        <th>Perfil Requerido</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Líder de Proyecto RCM</strong></td>
+                        <td>Coordinar el equipo, supervisar el avance, garantizar cumplimiento de plazos y ROI</td>
+                        <td>Ingeniero con experiencia en confiabilidad + certificación RCM + conocimientos financieros</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Analista de Confiabilidad</strong></td>
+                        <td>Realizar análisis RCM, AMEF, evaluación de riesgos, análisis costo-beneficio</td>
+                        <td>Ingeniero especializado en confiabilidad y análisis de datos</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Especialista en Operaciones</strong></td>
+                        <td>Proporcionar conocimiento operativo del equipo, funciones, contextos e impacto en producción</td>
+                        <td>Operador con amplia experiencia en los sistemas analizados</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Especialista en Mantenimiento</strong></td>
+                        <td>Proporcionar conocimiento técnico de mantenimiento, tareas posibles, costos históricos</td>
+                        <td>Técnico de mantenimiento con experiencia multidisciplinaria</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Analista Financiero</strong></td>
+                        <td>Evaluar impacto económico, calcular ROI, VPN, TIR, análisis costo-beneficio</td>
+                        <td>Profesional con experiencia en análisis financiero industrial</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Administrador de Datos</strong></td>
+                        <td>Recopilar y organizar datos según ISO 14224, mantener base de datos</td>
+                        <td>Profesional con habilidades en gestión de bases de datos</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Evaluación de Riesgos con Componente Económico -->
+        <div class="page-break"></div>
+        <div class="content-block">
+            <h2>6. EVALUACIÓN DE RIESGOS CON ANÁLISIS ECONÓMICO</h2>
+            
+            <h3>6.1. Matriz de Riesgo - Incluyendo Impacto Económico</h3>
+            
+            <div class="risk-matrix">
+                <div class="risk-cell" style="grid-column: 1; grid-row: 1; background-color: #f8f9fa; font-weight: bold;">Probabilidad/Impacto Económico</div>
+                <div class="risk-cell" style="grid-column: 2; grid-row: 1; background-color: #f8f9fa; font-weight: bold;">< $10,000</div>
+                <div class="risk-cell" style="grid-column: 3; grid-row: 1; background-color: #f8f9fa; font-weight: bold;">$10K-$50K</div>
+                <div class="risk-cell" style="grid-column: 4; grid-row: 1; background-color: #f8f9fa; font-weight: bold;">$50K-$200K</div>
+                <div class="risk-cell" style="grid-column: 5; grid-row: 1; background-color: #f8f9fa; font-weight: bold;">$200K-$500K</div>
+                <div class="risk-cell" style="grid-column: 6; grid-row: 1; background-color: #f8f9fa; font-weight: bold;">> $500,000</div>
+                
+                <div class="risk-cell" style="grid-column: 1; grid-row: 2; background-color: #f8f9fa; font-weight: bold;">Casi Seguro (A)</div>
+                <div class="risk-cell risk-medium">MEDIO</div>
+                <div class="risk-cell risk-high">ALTO</div>
+                <div class="risk-cell risk-critical">CRÍTICO</div>
+                <div class="risk-cell risk-critical">CRÍTICO</div>
+                <div class="risk-cell risk-critical">CRÍTICO</div>
+                
+                <div class="risk-cell" style="grid-column: 1; grid-row: 3; background-color: #f8f9fa; font-weight: bold;">Probable (B)</div>
+                <div class="risk-cell risk-low">BAJO</div>
+                <div class="risk-cell risk-medium">MEDIO</div>
+                <div class="risk-cell risk-high">ALTO</div>
+                <div class="risk-cell risk-critical">CRÍTICO</div>
+                <div class="risk-cell risk-critical">CRÍTICO</div>
+                
+                <div class="risk-cell" style="grid-column: 1; grid-row: 4; background-color: #f8f9fa; font-weight: bold;">Ocasional (C)</div>
+                <div class="risk-cell risk-low">BAJO</div>
+                <div class="risk-cell risk-medium">MEDIO</div>
+                <div class="risk-cell risk-medium">MEDIO</div>
+                <div class="risk-cell risk-high">ALTO</div>
+                <div class="risk-cell risk-critical">CRÍTICO</div>
+                
+                <div class="risk-cell" style="grid-column: 1; grid-row: 5; background-color: #f8f9fa; font-weight: bold;">Improbable (D)</div>
+                <div class="risk-cell risk-negligible">INSIGNIF.</div>
+                <div class="risk-cell risk-low">BAJO</div>
+                <div class="risk-cell risk-low">BAJO</div>
+                <div class="risk-cell risk-medium">MEDIO</div>
+                <div class="risk-cell risk-high">ALTO</div>
+                
+                <div class="risk-cell" style="grid-column: 1; grid-row: 6; background-color: #f8f9fa; font-weight: bold;">Raro (E)</div>
+                <div class="risk-cell risk-negligible">INSIGNIF.</div>
+                <div class="risk-cell risk-negligible">INSIGNIF.</div>
+                <div class="risk-cell risk-low">BAJO</div>
+                <div class="risk-cell risk-low">BAJO</div>
+                <div class="risk-cell risk-medium">MEDIO</div>
+            </div>
+            
+            <h3>6.2. Priorización por Impacto Económico y Seguridad</h3>
+            <p>Las tareas de mantenimiento se priorizarán según el siguiente orden (considerando impacto económico):</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Prioridad</th>
+                        <th>Criterio</th>
+                        <th>Impacto Económico Típico</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>ALTA (Crítica)</strong></td>
+                        <td>Riesgo de seguridad, impacto ambiental, parada completa de operación > 24h</td>
+                        <td>> $250,000 por evento</td>
+                        <td>Implementación inmediata, posible parada de equipo, modificación de diseño</td>
+                    </tr>
+                    <tr>
+                        <td><strong>MEDIA (Significativa)</strong></td>
+                        <td>Impacto operacional importante (>20% reducción capacidad), alto costo de reparación, calidad del producto afectada</td>
+                        <td>$50,000 - $250,000 por evento</td>
+                        <td>Programar en próximo mantenimiento planificado, implementar tareas predictivas</td>
+                    </tr>
+                    <tr>
+                        <td><strong>BAJA (Menor)</strong></td>
+                        <td>Impacto operacional menor, mantenimiento correctivo aceptable, bajo costo de falla</td>
+                        <td>< $50,000 por evento</td>
+                        <td>Incluir en programa de mantenimiento regular, posible mantenimiento correctivo</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Análisis Costo-Beneficio por Sistema -->
+        <div class="content-block">
+            <h2>7. ANÁLISIS COSTO-BENEFICIO POR SISTEMA CRÍTICO</h2>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sistema Crítico</th>
+                        <th>Inversión RCM Requerida</th>
+                        <th>Ahorro Anual Esperado</th>
+                        <th>ROI Esperado</th>
+                        <th>Período Recuperación</th>
+                        <th>Prioridad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Sistema de Compresión</strong></td>
+                        <td>$45,000</td>
+                        <td>$120,000</td>
+                        <td>167%</td>
+                        <td>4.5 meses</td>
+                        <td><span style="color: #e74c3c; font-weight: bold;">ALTA</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Línea de Envasado Principal</strong></td>
+                        <td>$38,000</td>
+                        <td>$95,000</td>
+                        <td>150%</td>
+                        <td>4.8 meses</td>
+                        <td><span style="color: #e74c3c; font-weight: bold;">ALTA</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Sistema HVAC Planta</strong></td>
+                        <td>$32,000</td>
+                        <td>$65,000</td>
+                        <td>103%</td>
+                        <td>5.9 meses</td>
+                        <td><span style="color: #e67e22; font-weight: bold;">MEDIA</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Sistema de Tratamiento de Agua</strong></td>
+                        <td>$28,000</td>
+                        <td>$55,000</td>
+                        <td>96%</td>
+                        <td>6.1 meses</td>
+                        <td><span style="color: #e67e22; font-weight: bold;">MEDIA</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Sistema Eléctrico Principal</strong></td>
+                        <td>$25,000</td>
+                        <td>$45,000</td>
+                        <td>80%</td>
+                        <td>6.7 meses</td>
+                        <td><span style="color: #f1c40f; font-weight: bold;">MEDIA-BAJA</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Sistema de Almacenamiento</strong></td>
+                        <td>$18,000</td>
+                        <td>$30,000</td>
+                        <td>67%</td>
+                        <td>7.2 meses</td>
+                        <td><span style="color: #f1c40f; font-weight: bold;">MEDIA-BAJA</span></td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: bold;">TOTAL / PROMEDIO</td>
+                        <td style="font-weight: bold;">$186,000</td>
+                        <td style="font-weight: bold;">$410,000</td>
+                        <td style="font-weight: bold;">120%</td>
+                        <td style="font-weight: bold;">5.4 meses</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="economic-box">
+                <strong>Conclusión del análisis económico por sistema:</strong> Los sistemas de compresión y envasado ofrecen los mejores retornos de inversión y deben ser priorizados en la implementación del RCM. El promedio de ROI del 120% confirma la rentabilidad del proyecto.
+            </div>
+        </div>
+        
+        <!-- Las 7 Preguntas del RCM con Enfoque Económico -->
+        <div class="page-break"></div>
+        <div class="content-block">
+            <h2>8. LAS SIETE PREGUNTAS DEL RCM CON ENFOQUE ECONÓMICO</h2>
+            <p>Para cada modo de falla identificado, el equipo RCM debe responder sistemáticamente estas 7 preguntas, considerando el impacto económico:</p>
+            
+            <div class="step-box">
+                <div class="step-number">1</div>
+                <strong>¿Cuáles son las funciones y estándares de desempeño asociados con el activo en su contexto operativo actual?</strong>
+                <div style="margin-top: 8px; font-size: 0.95em; color: #555;"><em>Enfoque económico: Valor de producción del activo, costo de operación, impacto en ingresos.</em></div>
+            </div>
+            
+            <div class="step-box">
+                <div class="step-number">2</div>
+                <strong>¿De qué formas falla en cumplir sus funciones? (Modos de falla funcionales)</strong>
+                <div style="margin-top: 8px; font-size: 0.95em; color: #555;"><em>Enfoque económico: Identificar fallas con mayor impacto en costos de producción.</em></div>
+            </div>
+            
+            <div class="step-box">
+                <div class="step-number">3</div>
+                <strong>¿Qué causa cada falla funcional? (Modos de falla y sus mecanismos)</strong>
+                <div style="margin-top: 8px; font-size: 0.95em; color: #555;"><em>Enfoque económico: Costos de diagnóstico, análisis de causa raíz.</em></div>
+            </div>
+            
+            <div class="step-box">
+                <div class="step-number">4</div>
+                <strong>¿Qué sucede cuando ocurre cada falla? (Efectos de la falla)</strong>
+                <div style="margin-top: 8px; font-size: 0.95em; color: #555;"><em>Enfoque económico: Costo de parada, reparación, pérdida de producción, penalizaciones.</em></div>
+            </div>
+            
+            <div class="step-box">
+                <div class="step-number">5</div>
+                <strong>¿En qué forma importa cada falla? (Consecuencias)</strong>
+                <div style="margin-top: 8px; font-size: 0.95em; color: #555;"><em>Enfoque económico: Evaluar impacto económico total (directo e indirecto).</em></div>
+            </div>
+            
+            <div class="step-box">
+                <div class="step-number">6</div>
+                <strong>¿Qué se puede hacer para predecir o prevenir cada falla?</strong>
+                <div style="margin-top: 8px; font-size: 0.95em; color: #555;"><em>Enfoque económico: Análisis costo-beneficio de tareas preventivas vs costo de falla.</em></div>
+            </div>
+            
+            <div class="step-box">
+                <div class="step-number">7</div>
+                <strong>¿Qué se debe hacer si no se puede encontrar una tarea proactiva adecuada?</strong>
+                <div style="margin-top: 8px; font-size: 0.95em; color: #555;"><em>Enfoque económico: Evaluar costo de rediseño vs costo aceptable de falla.</em></div>
+            </div>
+            
+            <div class="economic-box">
+                <strong>Nueva pregunta económica adicional:</strong> ¿Cuál es el costo total de propiedad (TCO) de cada estrategia de mantenimiento y cuál maximiza el valor para la organización?
+            </div>
+        </div>
+        
+        <!-- Cronograma del Proyecto con Hitos Económicos -->
+        <div class="content-block">
+            <h2>9. CRONOGRAMA DEL PROYECTO CON HITOS ECONÓMICOS</h2>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fase</th>
+                        <th>Actividades Principales</th>
+                        <th>Duración</th>
+                        <th>Hitos Económicos</th>
+                        <th>Inversión Acumulada</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Preparación</strong></td>
+                        <td>Formar equipo, definir alcance, planificar, capacitación inicial</td>
+                        <td>4 semanas</td>
+                        <td>Establecimiento línea base financiera</td>
+                        <td>$25,000</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Análisis Sistemas Críticos</strong></td>
+                        <td>Seleccionar sistemas, recopilar datos, definir funciones</td>
+                        <td>6 semanas</td>
+                        <td>Identificación oportunidades de ahorro</td>
+                        <td>$65,000</td>
+                    </tr>
+                    <tr>
+                        <td><strong>AMEF y 7 Preguntas RCM</strong></td>
+                        <td>Talleres de análisis, identificación modos falla</td>
+                        <td>8 semanas</td>
+                        <td>Cuantificación impacto económico fallas</td>
+                        <td>$125,000</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Desarrollo Estrategias</strong></td>
+                        <td>Definir tareas, priorizar, estimar recursos</td>
+                        <td>4 semanas</td>
+                        <td>Análisis costo-beneficio completo</td>
+                        <td>$155,000</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Implementación Piloto</strong></td>
+                        <td>Integrar en sistema gestión, capacitar, ejecutar tareas piloto</td>
+                        <td>8 semanas</td>
+                        <td>Primeros ahorros realizados ($40,000)</td>
+                        <td>$195,000</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Implementación Completa</strong></td>
+                        <td>Extender a todos sistemas, optimizar continuamente</td>
+                        <td>12 semanas</td>
+                        <td>ROI positivo alcanzado</td>
+                        <td>$245,000</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Seguimiento y Mejora</strong></td>
+                        <td>Monitorear KPIs, revisar efectividad, ajustar estrategias</td>
+                        <td>Continuo</td>
+                        <td>Ahorros acumulados > inversión</td>
+                        <td>ROI 120%+</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="info-box">
+                <strong>Punto de equilibrio económico:</strong> Se espera alcanzar el punto de equilibrio (recuperación total de la inversión) entre los meses 5 y 9 de la implementación, dependiendo del ritmo de ejecución y realización de ahorros.
+            </div>
+        </div>
+        
+        <!-- Evaluación y Validación con Métricas Financieras -->
+        <div class="page-break"></div>
+        <div class="content-block">
+            <h2>10. EVALUACIÓN Y VALIDACIÓN CON MÉTRICAS FINANCIERAS</h2>
+            
+            <h3>10.1. Criterios de Éxito Económico</h3>
+            <ul>
+                <li><strong>ROI mínimo del 40%</strong> durante el primer año después de implementación completa</li>
+                <li><strong>Reducción del 15% en costo de mantenimiento</strong> como porcentaje del costo de producción</li>
+                <li><strong>Ahorros documentados de al menos $300,000 anuales</strong> después del primer año</li>
+                <li><strong>Reducción del 30% en mantenimiento correctivo no planificado</strong></li>
+                <li><strong>Período de recuperación de la inversión menor a 12 meses</strong></li>
+            </ul>
+            
+            <h3>10.2. Métricas de Validación Financiera</h3>
+            
+            <div class="phase-container">
+                <div class="phase-card">
+                    <div class="phase-title">Validación de Ahorros</div>
+                    <ul>
+                        <li>Comparar costos históricos vs costos post-implementación</li>
+                        <li>Verificar reducción de tiempos de parada no planificados</li>
+                        <li>Medir disminución de costos de reparación de emergencia</li>
+                        <li>Calcular optimización de inventario de repuestos</li>
+                    </ul>
+                </div>
+                
+                <div class="phase-card">
+                    <div class="phase-title">Validación de Inversión</div>
+                    <ul>
+                        <li>Verificar que los costos de implementación estén dentro del presupuesto</li>
+                        <li>Validar que los recursos asignados sean utilizados eficientemente</li>
+                        <li>Confirmar que las herramientas adquiridas sean utilizadas adecuadamente</li>
+                        <li>Evaluar la capacitación del personal en nuevas metodologías</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <h3>10.3. Auditoría Económica Trimestral</h3>
+            <p>Se realizarán auditorías económicas trimestrales para verificar:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Área de Auditoría</th>
+                        <th>Métricas a Verificar</th>
+                        <th>Tolerancia</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Cumplimiento Presupuestario</strong></td>
+                        <td>Desviación de costos de implementación</td>
+                        <td>±10% del presupuesto</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Realización de Ahorros</strong></td>
+                        <td>Ahorros reales vs proyectados</td>
+                        <td>≥80% de lo proyectado</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ROI del Proyecto</strong></td>
+                        <td>ROI real calculado trimestralmente</td>
+                        <td>≥30% anualizado</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Eficiencia de Recursos</strong></td>
+                        <td>Horas dedicadas vs horas planificadas</td>
+                        <td>±15% de lo planificado</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Conclusión con Enfoque Económico -->
+        <div class="content-block">
+            <h2>11. CONCLUSIÓN - JUSTIFICACIÓN ECONÓMICA</h2>
+            <p>Este proyecto de implementación de RCM para planta de producción no solo mejora la confiabilidad y seguridad, sino que presenta una sólida justificación económica con retornos de inversión atractivos y períodos de recuperación cortos.</p>
+            
+            <div class="economic-box">
+                <strong>Resumen de justificación económica:</strong>
+                <ul>
+                    <li><strong>Inversión requerida:</strong> $170,000 - $245,000 (una vez)</li>
+                    <li><strong>Ahorros anuales esperados:</strong> $330,000 - $540,000 (recurrentes)</li>
+                    <li><strong>ROI anual:</strong> 45% - 73%</li>
+                    <li><strong>Período de recuperación:</strong> 5 - 9 meses</li>
+                    <li><strong>VPN a 5 años:</strong> $850,000 - $1,450,000</li>
+                    <li><strong>TIR:</strong> 62% - 98%</li>
+                </ul>
+            </div>
+            
+            <p>La implementación de RCM representa una oportunidad estratégica para transformar la función de mantenimiento de un centro de costo a un generador de valor. Los beneficios económicos se materializan a través de múltiples vías:</p>
+            
+            <div class="phase-container">
+                <div class="phase-card">
+                    <div class="phase-title">Reducción de Costos Directos</div>
+                    <ul>
+                        <li>Menos reparaciones de emergencia</li>
+                        <li>Optimización de inventario</li>
+                        <li>Reducción de consumo energético</li>
+                        <li>Extensión de vida útil de activos</li>
+                    </ul>
+                </div>
+                
+                <div class="phase-card">
+                    <div class="phase-title">Aumento de Ingresos</div>
+                    <ul>
+                        <li>Mayor disponibilidad de producción</li>
+                        <li>Mejora de calidad del producto</li>
+                        <li>Mayor capacidad para cumplir pedidos</li>
+                        <li>Reducción de rechazos y reprocesos</li>
+                    </ul>
+                </div>
+                
+                <div class="phase-card">
+                    <div class="phase-title">Beneficios Intangibles</div>
+                    <ul>
+                        <li>Mejora de seguridad y reducción de riesgos</li>
+                        <li>Cumplimiento normativo y regulatorio</li>
+                        <li>Mejora de cultura organizacional</li>
+                        <li>Capitalización del conocimiento técnico</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="important-box">
+                <strong>Recomendación final:</strong> Dado el sólido caso de negocio con ROI atractivo, período de recuperación corto y múltiples beneficios operativos y de seguridad, se recomienda proceder con la implementación completa del proyecto RCM en la planta de producción.
+            </div>
+        </div>
+        
+        <!-- Pie de página -->
+        <div class="footer">
+            <p><strong>PROYECTO DE IMPLEMENTACIÓN RCM - ANÁLISIS ECONÓMICO PARA PLANTA DE PRODUCCIÓN</strong></p>
+            <p>Documento elaborado conforme a: SAE JA1011, SAE JA1012, ISO 14224, UNE-EN 60300-3-11</p>
+            <p>Versión: 2.0 | Fecha: <span id="current-date"></span> | Clasificación: Uso Interno - Confidencial</p>
+            <p class="no-print">Para imprimir como PDF, use el botón de impresión o la función de impresión de su navegador (Ctrl+P).</p>
+        </div>
+    </div>
+
+    <script>
+        // Fecha actual
+        document.getElementById('current-date').textContent = new Date().toLocaleDateString('es-ES', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        
+        // Configuración para impresión
+        document.addEventListener('DOMContentLoaded', function() {
+            // Añadir números de página para impresión
+            const style = document.createElement('style');
+            style.innerHTML = `
+                @media print {
+                    @page {
+                        @bottom-right {
+                            content: "Página " counter(page) " de " counter(pages);
+                            font-size: 10pt;
+                            color: #777;
+                        }
+                        @top-center {
+                            content: "Proyecto RCM - Análisis Económico Planta de Producción";
+                            font-size: 10pt;
+                            color: #777;
+                        }
+                    }
+                    
+                    body {
+                        counter-reset: page;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>
